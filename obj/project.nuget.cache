@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "yiVMT2mUT3tAv1sVGqtIxe9DFe9mxgsGyw24lqhx701dxWAUWo5ASdPsYGp30VKMCu2QJgwT7+Yzurf8D9yY8w==",
+  "dgSpecHash": "iHGRLg6twPmHwxiAcq3MvG9/nOO5pLXvBZkKkq99LzzprBGWjRUdSHuFogxSHFxL84tmq6Zf2QRFizT+KTUyVw==",
   "success": true,
-  "projectFilePath": "D:\\MySite\\MyApp\\WebApp\\WebApp.csproj",
+  "projectFilePath": "D:\\GitHub\\WebApp\\WebApp.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Hafiz\\.nuget\\packages\\aspnetcore.identity.mongodbcore\\6.0.0\\aspnetcore.identity.mongodbcore.6.0.0.nupkg.sha512",
     "C:\\Users\\Hafiz\\.nuget\\packages\\awssdk.core\\3.7.100.14\\awssdk.core.3.7.100.14.nupkg.sha512",

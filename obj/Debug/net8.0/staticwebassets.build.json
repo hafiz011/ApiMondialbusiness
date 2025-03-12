@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "56zsRhYpUL5Mdyuno7+Y1hcGIS0aZ4Emo2K1uL9pObM=",
+  "Hash": "8GWMuqRQwThUQAz6xuftletljrtj3EFDJh2/YZAi4/U=",
   "Source": "WebApp",
   "BasePath": "_content/WebApp",
   "Mode": "Default",
@@ -10,17 +10,17 @@
     {
       "Name": "WebApp\\wwwroot",
       "Source": "WebApp",
-      "ContentRoot": "D:\\MySite\\MyApp\\WebApp\\wwwroot\\",
+      "ContentRoot": "D:\\GitHub\\WebApp\\wwwroot\\",
       "BasePath": "_content/WebApp",
       "Pattern": "**"
     }
   ],
   "Assets": [
     {
-      "Identity": "D:\\MySite\\MyApp\\WebApp\\wwwroot\\images\\profile\\be60a53c-f5a2-4ad5-a6ab-613adff8df23.png",
+      "Identity": "D:\\GitHub\\WebApp\\wwwroot\\images\\profile\\be60a53c-f5a2-4ad5-a6ab-613adff8df23.png",
       "SourceId": "WebApp",
       "SourceType": "Discovered",
-      "ContentRoot": "D:\\MySite\\MyApp\\WebApp\\wwwroot\\",
+      "ContentRoot": "D:\\GitHub\\WebApp\\wwwroot\\",
       "BasePath": "_content/WebApp",
       "RelativePath": "images/profile/be60a53c-f5a2-4ad5-a6ab-613adff8df23.png",
       "AssetKind": "All",

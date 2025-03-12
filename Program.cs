@@ -17,6 +17,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
 builder.Services.AddSingleton<MongoDbContext>();
 
+
+
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(identityOptions =>
 {
     identityOptions.Password.RequireDigit = true;
@@ -63,9 +65,14 @@ builder.Services.AddControllersWithViews(options =>
 
 builder.Services.AddScoped<IUserGeolocationRepository, UserGeolocationRepository>();
 builder.Services.AddScoped<IUserLogsRepository, UserLogsRepository>();
+builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<IUserGeolocationRepository, UserGeolocationRepository>();
 builder.Services.AddScoped<IUserLogsRepository, UserLogsRepository>();
-builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<IInfoRepository, InfoRepository>();
+builder.Services.AddSingleton<IFAQsRepository, FAQsRepository>();
+
+
+
 
 
 builder.Services.AddControllers();

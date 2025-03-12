@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\MySite\\MyApp\\WebApp\\WebApp.csproj": {}
+    "D:\\GitHub\\WebApp\\WebApp.csproj": {}
   },
   "projects": {
-    "D:\\MySite\\MyApp\\WebApp\\WebApp.csproj": {
+    "D:\\GitHub\\WebApp\\WebApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\MySite\\MyApp\\WebApp\\WebApp.csproj",
+        "projectUniqueName": "D:\\GitHub\\WebApp\\WebApp.csproj",
         "projectName": "WebApp",
-        "projectPath": "D:\\MySite\\MyApp\\WebApp\\WebApp.csproj",
+        "projectPath": "D:\\GitHub\\WebApp\\WebApp.csproj",
         "packagesPath": "C:\\Users\\Hafiz\\.nuget\\packages\\",
-        "outputPath": "D:\\MySite\\MyApp\\WebApp\\obj\\",
+        "outputPath": "D:\\GitHub\\WebApp\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Hafiz\\AppData\\Roaming\\NuGet\\NuGet.Config",
