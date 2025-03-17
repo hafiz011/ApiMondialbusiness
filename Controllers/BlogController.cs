@@ -85,7 +85,7 @@ namespace WebApp.Controllers
 
         // Create a new blog post
         [HttpPost("create")]
-        [Authorize] // Requires authentication
+        //[Authorize] // Requires authentication
         public async Task<IActionResult> Create( BlogCreateModel model)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -146,7 +146,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPut("update/{id}")]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> Update(string id, BlogCreateModel model)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -215,7 +215,7 @@ namespace WebApp.Controllers
 
 
         [HttpDelete("delete/{id}")]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> Delete(string id)
         {
             var blog = await _blogRepository.GetByIdAsync(id);
@@ -251,33 +251,104 @@ namespace WebApp.Controllers
             return Ok(comments);
         }
 
-        // Add a comment to a blog post
         [HttpPost("{id}/comments")]
-        [Authorize]
-        public async Task<IActionResult> AddComment(string id, [FromBody] BlogCommentModel comment)
+        //[Authorize] // Requires authentication
+        public async Task<IActionResult> AddComment(string id, BlogCommentModel comment)
         {
-           
+            if (string.IsNullOrEmpty(id))
+            {
+                return BadRequest(new { Message = "Invalid request data" });
+            }
+
             var user = await _userManager.FindByIdAsync(comment.UserId);
             if (user == null)
+            {
                 return NotFound(new { Message = "User not found" });
+            }
 
             comment.Id = Guid.NewGuid().ToString();
             comment.BlogPostId = id;
-            comment.ParentCommentId = id;
-            comment.UserId = user.Id.ToString();
             comment.CommentDate = DateTime.UtcNow;
 
             await _blogRepository.AddCommentAsync(comment);
-            return CreatedAtAction(nameof(GetComments), new { id }, comment);
+
+            return CreatedAtAction(nameof(GetComments), new { id }, new { Message = "Comment added successfully", Comment = comment });
         }
 
-        // Delete a comment
-        [HttpDelete("comments/{id}")]
-        [Authorize]
-        public async Task<IActionResult> DeleteComment(string id)
+        [HttpPost("{id}/reply")]
+        //[Authorize(Roles = "Admin")] // Restricts access to Admins pass 
+        //value= blog id and comment massage
+        public async Task<IActionResult> AdminReply(string id, BlogCommentModel comment)
         {
-            await _blogRepository.DeleteCommentAsync(id);
-            return NoContent();
+            if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(comment.UserId))
+            {
+                return BadRequest(new { Message = "Invalid request data" });
+            }
+
+            var user = await _userManager.FindByIdAsync(comment.UserId);
+            if (user == null)
+            {
+                return NotFound(new { Message = "User not found" });
+            }
+            var blog = await _blogRepository.GetByCommentIdAsync(id);
+            comment.Id = Guid.NewGuid().ToString();
+            comment.ParentCommentId = blog.Id;
+            comment.BlogPostId = blog.BlogPostId;
+            comment.CommentDate = DateTime.UtcNow;
+
+            await _blogRepository.AddCommentAsync(comment);
+
+            return Ok(new { Message = "Reply added successfully", Reply = comment });
+        }
+
+        [HttpDelete("comments/{commentId}")]
+        public async Task<IActionResult> DeleteComment(string commentId)
+        {
+            if (string.IsNullOrEmpty(commentId))
+            {
+                return BadRequest(new { Message = "Comment ID is required." });
+            }
+
+            try
+            {
+                // Fetch the specific comment to delete
+                var commentToDelete = await _blogRepository.GetByCommentIdAsync(commentId);
+                if (commentToDelete == null)
+                {
+                    return NotFound(new { Message = "Comment not found." });
+                }
+
+                // Recursively fetch all child comments
+                var allCommentsToDelete = new List<BlogCommentModel>();
+                await GetAllChildCommentsRecursive(commentToDelete.Id, allCommentsToDelete);
+
+                // Include the parent comment itself in the list
+                allCommentsToDelete.Add(commentToDelete);
+
+                // Delete all comments asynchronously
+                foreach (var comment in allCommentsToDelete)
+                {
+                    await _blogRepository.DeleteCommentAsync(comment.Id);
+                }
+
+
+                return Ok(new { Message = "Comment and all its replies deleted successfully!" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "An error occurred while trying to delete the comment. Please try again." });
+            }
+        }
+
+        // Helper method to recursively get all child comments
+        private async Task GetAllChildCommentsRecursive(string parentId, List<BlogCommentModel> commentsToDelete)
+        {
+            var childComments = await _blogRepository.GetCommentsByParentCommentIdAsync(parentId);
+            foreach (var comment in childComments)
+            {
+                commentsToDelete.Add(comment);
+                await GetAllChildCommentsRecursive(comment.Id, commentsToDelete);
+            }
         }
 
     }
