@@ -29,7 +29,7 @@ namespace WebApp.Helpers
                 issuer: issuer,
                 audience: audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(expiryHours),
+                expires: DateTime.UtcNow.AddHours(1),
                 signingCredentials: creds
             );
 
