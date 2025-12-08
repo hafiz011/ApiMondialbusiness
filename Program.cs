@@ -19,7 +19,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
 builder.Services.AddSingleton<MongoDbContext>();
 
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
 
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(identityOptions =>
 {
@@ -59,11 +67,11 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddHttpClient<GeolocationService>();
-builder.Services.AddControllersWithViews(options =>
-{
-    options.Filters.Add<UserActivityLog>();
-});
+//builder.Services.AddHttpClient<GeolocationService>();
+//builder.Services.AddControllersWithViews(options =>
+//{
+//    options.Filters.Add<UserActivityLog>();
+//});
 
 builder.Services.AddScoped<IUserGeolocationRepository, UserGeolocationRepository>();
 builder.Services.AddScoped<IUserLogsRepository, UserLogsRepository>();
@@ -74,6 +82,7 @@ builder.Services.AddScoped<IInfoRepository, InfoRepository>();
 builder.Services.AddSingleton<IFAQsRepository, FAQsRepository>();
 builder.Services.AddSingleton<ITestimonialRepository, TestimonialRepository>();
 builder.Services.AddSingleton<IBlogRepository, BlogRepository>();
+builder.Services.AddSingleton<ISubmmitdata, SubmmitdataRepository>();
 
 
 
@@ -84,6 +93,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.UseCors("AllowAll");
+
 
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {

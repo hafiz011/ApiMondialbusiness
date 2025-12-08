@@ -8,11 +8,9 @@ namespace WebApp.Models.DatabaseModels
 {
     public class ApplicationUser : MongoIdentityUser<Guid>
     {
-        [BsonElement("FirstName")]
-        public string FirstName { get; set; }
-
-        [BsonElement("LastName")]
-        public string LastName { get; set; }
+        [BsonElement("Name")]
+        public string Name { get; set; }
+        public string User { get; set; }
 
         [BsonElement("Phone")]
         public string Phone { get; set; }

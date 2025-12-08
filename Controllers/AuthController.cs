@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using WebApp.Helpers;
-using System.Net;
-using WebApp.Models.DatabaseModels;
-using WebApp.Models;
-using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
+using System.ComponentModel.DataAnnotations;
+using System.Net;
+using System.Security.Claims;
+using WebApp.Helpers;
+using WebApp.Models;
+using WebApp.Models.DatabaseModels;
 namespace WebApp.Controllers
 {
     [Route("api/[controller]")]
@@ -75,11 +76,9 @@ namespace WebApp.Controllers
                     Token = token,
                     User = new
                     {
-                        user.Id,
-                        user.FirstName,
-                        user.LastName,
-                        user.Email,
-                        user.PhoneNumber,
+                        Id = user.Id,
+                        Name = user.Name,
+                        Email = user.Email
                     }
                 });
             }
@@ -113,10 +112,8 @@ namespace WebApp.Controllers
             {
                 UserName = model.Email,
                 Email = model.Email,
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                PhoneNumber = model.Phone,
-                Address = model.Address
+                Name = model.Name,
+                User = model.User
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -137,10 +134,15 @@ namespace WebApp.Controllers
 
             await _userManager.AddToRoleAsync(user, defaultRole);
 
+            /*            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);*/
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
-            var confirmationLink = Url.Action("ConfirmEmail", "Auth",
-                   new { userId = user.Id, token }, Request.Scheme);
+            var encodedToken = WebUtility.UrlEncode(token);
+
+            //var confirmationLink = Url.Action("ConfirmEmail", "Auth",
+            //       new { userId = user.Id, token }, Request.Scheme);
+
+            var confirmationLink = $"https://mondialbusiness.eu/confirm-email?userId={Uri.EscapeDataString(user.Id.ToString())}&token={encodedToken}";
 
             bool emailSent = await _emailService.SendEmailAsync(user.Email, "Confirm your email",
                 $"Please confirm your account by clicking this link: <a href='{confirmationLink}'>Confirm Email</a>");
@@ -152,7 +154,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost("confirm-email")]
-        public async Task<IActionResult> ConfirmEmail(ConfirmEmailModel model)
+        public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailModel model)
         {
             if (string.IsNullOrEmpty(model.UserId) || string.IsNullOrEmpty(model.Token))
             {
@@ -169,8 +171,8 @@ namespace WebApp.Controllers
             {
                 return Ok(new { Message = "Your email is already confirmed. You can log in now." });
             }
-            var decodedToken = WebUtility.UrlDecode(model.Token);
-            var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
+            //var decodedToken = WebUtility.UrlDecode(model.Token);
+            var result = await _userManager.ConfirmEmailAsync(user, model.Token);
             if (!result.Succeeded)
             {
                 return BadRequest(new { Message = "Email confirmation failed. Invalid or expired token." });
@@ -180,6 +182,13 @@ namespace WebApp.Controllers
         }
 
 
+        public class ForgotPasswordModel
+        {
+            [Required]
+            [EmailAddress]
+            public string Email { get; set; }
+        }
+
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordModel model)
         {
@@ -187,21 +196,22 @@ namespace WebApp.Controllers
             {
                 return BadRequest(new
                 {
-                    Message = "Invalid input",
-                    Errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)
+                    Message = "Invalid email"
                 });
             }
 
+            // Find the user by email
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
-                return NotFound(new { Message = "User not found" });
+                return BadRequest(new { Message = "User not found" });
 
+            // Generate the reset token
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var encodedToken = WebUtility.UrlEncode(token);
-            var resetUrl = $"{Request.Scheme}://{Request.Host}/reset-password?token={encodedToken}&email={model.Email}";
+            // var resetUrl = $"{Request.Scheme}://{Request.Host}/reset-password?token={encodedToken}&email={model.Email}";
+            var resetUrl = $"https://mondialbusiness.eu/reset-password?email={model.Email}&token={encodedToken}";
 
             _logger.LogInformation($"Generated password reset token for {model.Email}");
-
             bool emailSent = await _emailService.SendEmailAsync(user.Email, "Password Reset",
                 $"Click here to reset your password: <a href='{resetUrl}'>Reset Password</a>");
 
@@ -215,31 +225,86 @@ namespace WebApp.Controllers
         public async Task<IActionResult> ResetPassword(ResetPasswordRequestModel model)
         {
             if (!ModelState.IsValid)
-            {
-                return BadRequest(new
-                {
-                    Message = "Invalid input",
-                    Errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)
-                });
-            }
+                return BadRequest(ModelState);
 
+            // Find the user by email
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
-                return NotFound(new { Message = "User not found" });
+                return BadRequest(new { Message = "User not found" });
+
+            // Decode token from URL
             var decodedToken = WebUtility.UrlDecode(model.Token);
+
+            // Reset the password using the token
             var result = await _userManager.ResetPasswordAsync(user, decodedToken, model.NewPassword);
 
             if (!result.Succeeded)
-            {
-                return BadRequest(new
-                {
-                    Message = "Invalid or expired token",
-                    Errors = result.Errors.Select(e => e.Description)
-                });
-            }
+                return BadRequest(new { Message = "Invalid or expired token." });
 
             _logger.LogInformation($"Password successfully reset for {model.Email}");
             return Ok(new { Message = "Password reset successfully." });
+        }
+
+
+        //[HttpPost("reset-password")]
+        //public async Task<IActionResult> ResetPassword(ResetPasswordRequestModel model)
+        //{
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(ModelState);
+
+        //    // Find the user by email
+        //    var user = await _userManager.FindByEmailAsync(model.Email);
+        //    if (user == null)
+        //        return BadRequest(new { Message = "User not found" });
+
+        //    // Reset the password using the token
+        //    var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
+
+        //    if (!result.Succeeded)
+        //        return BadRequest(new { Message = "Invalid or expired token." });
+
+        //    _logger.LogInformation($"Password successfully reset for {model.Email}");
+        //    return Ok(new { Message = "Password reset successfully." });
+        //}
+
+        public class ChangePasswordModel
+        {
+            public string currentPassword { get; set; }
+            public string newPassword { get; set; }
+        }
+
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordModel model)
+        {
+            try
+            {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId))
+                    return Unauthorized(new { Message = "User not authenticated." });
+
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user == null)
+                    return NotFound(new { Message = "User not found." });
+
+                var result = await _userManager.ChangePasswordAsync(user, model.currentPassword, model.newPassword);
+                if (!result.Succeeded)
+                {
+                    return BadRequest(new
+                    {
+                        Message = "Password change failed.",
+                        Errors = result.Errors.Select(e => e.Description)
+                    });
+                }
+
+                _logger.LogInformation($"Password successfully reset for user {user.Email}");
+
+                return Ok(new { Message = "Password reset successfully." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error changing password");
+                return StatusCode(500, new { Message = "Internal server error", Error = ex.Message });
+            }
         }
 
         [HttpGet("account")]
@@ -256,8 +321,7 @@ namespace WebApp.Controllers
             return Ok(new
             {
                 user.Id,
-                user.FirstName,
-                user.LastName,
+                user.Name,
                 user.Email,
                 user.PhoneNumber,
                 user.Address,
@@ -276,8 +340,7 @@ namespace WebApp.Controllers
             if (user == null)
                 return NotFound(new { Message = "User not found." });
 
-            user.FirstName = model.FirstName ?? user.FirstName;
-            user.LastName = model.LastName ?? user.LastName;
+            user.Name = model.FirstName ?? user.Name;
             user.PhoneNumber = model.Phone ?? user.PhoneNumber;
             user.Address = model.Address ?? user.Address;
 

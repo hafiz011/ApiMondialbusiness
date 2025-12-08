@@ -42,11 +42,12 @@ namespace WebApp.Controllers
             var users = _userManager.Users.Select(user => new
             {
                 user.Id,
-                user.FirstName,
-                user.LastName,
+                user.Name,
                 user.Email,
                 user.PhoneNumber,
-                user.LockoutEnd
+                user.Roles,
+                user.User,
+                user.Address
             }).ToList();
 
             return Ok(users);
@@ -63,8 +64,7 @@ namespace WebApp.Controllers
             return Ok(new
             {
                 user.Id,
-                user.FirstName,
-                user.LastName,
+                user.Name,
                 user.Email,
                 user.PhoneNumber,
                 user.UserName,

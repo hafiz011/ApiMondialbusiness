@@ -23,6 +23,8 @@ namespace WebApp.DbContext
         public IMongoCollection<TestimonialModel> Testimonials => _database.GetCollection<TestimonialModel>("Testimonials");
         public IMongoCollection<BlogCommentModel> BlogsComments => _database.GetCollection<BlogCommentModel>("BlogsComments");
         public IMongoCollection<BlogModel> Blogs => _database.GetCollection<BlogModel>("Blogs");
+        public IMongoCollection<FormData> FormDatas => _database.GetCollection<FormData>("FormDatas");
+
 
     }
 
