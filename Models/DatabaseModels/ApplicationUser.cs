@@ -26,6 +26,7 @@ namespace WebApp.Models.DatabaseModels
 
         [BsonElement("RefreshTokenExpiryTime")]
         public DateTime RefreshTokenExpiryTime { get; set; }
+        public string Bio { get; set; }
     }
 
     public class Address

@@ -15,14 +15,9 @@ namespace WebApp.DbContext
         }
         public IMongoCollection<ApplicationUser> Users => _database.GetCollection<ApplicationUser>("Users");
         public IMongoCollection<ApplicationRole> Roles => _database.GetCollection<ApplicationRole>("Roles");
-        public IMongoCollection<GeolocationModel> UserGeolocation => _database.GetCollection<GeolocationModel>("User_Geolocation");
-        public IMongoCollection<ActivityLogsModel> UserLogs => _database.GetCollection<ActivityLogsModel>("User_Logs");
+
         public IMongoCollection<ContactModel> Contacts => _database.GetCollection<ContactModel>("Contacts");
-        public IMongoCollection<AboutModel> About => _database.GetCollection<AboutModel>("About");
-        public IMongoCollection<FAQsModel> FAQs => _database.GetCollection<FAQsModel>("FAQs");
-        public IMongoCollection<TestimonialModel> Testimonials => _database.GetCollection<TestimonialModel>("Testimonials");
-        public IMongoCollection<BlogCommentModel> BlogsComments => _database.GetCollection<BlogCommentModel>("BlogsComments");
-        public IMongoCollection<BlogModel> Blogs => _database.GetCollection<BlogModel>("Blogs");
+
         public IMongoCollection<FormData> FormDatas => _database.GetCollection<FormData>("FormDatas");
 
 

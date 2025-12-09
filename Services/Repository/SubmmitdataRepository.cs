@@ -18,6 +18,12 @@ namespace WebApp.Services.Repository
             await _context.FormDatas.InsertOneAsync(formData);
         }
 
+        public async Task<bool> DeleteById(Guid id)
+        {
+            var result = await _context.FormDatas.DeleteOneAsync(f => f.Id == id);
+            return result.DeletedCount > 0;
+        }
+
         public async Task<List<FormData>> GetAll()
         {
             return await _context.FormDatas.Find(_ => true).ToListAsync();

@@ -4,10 +4,9 @@ namespace WebApp.Models
 {
     public class UpdateAccountModel
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string Name { get; set; }
         public string Phone { get; set; }
+        public string Bio { get; set; }
         public Address Address { get; set; }
-        public IFormFile ImagePath { get; set; }
     }
 }

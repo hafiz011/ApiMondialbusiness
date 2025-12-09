@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using WebApp.DbContext;
 using WebApp.Models.DatabaseModels;
@@ -30,6 +31,7 @@ namespace WebApp.Controllers
         }
 
         // ------------------ READ ALL ------------------
+        [Authorize(Roles = "Admin")]
         [HttpGet("all")]
         public async Task<IActionResult> GetAll()
         {
@@ -38,6 +40,7 @@ namespace WebApp.Controllers
         }
 
         // ------------------ READ BY ID ------------------
+        [Authorize(Roles = "Admin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
@@ -47,16 +50,16 @@ namespace WebApp.Controllers
             return Ok(data);
         }
 
-      
 
-        //// ------------------ DELETE ------------------
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> DeleteForm(Guid id)
-        //{
-        //    var result = await Collection.DeleteOneAsync(f => f.Id == id);
-        //    if (result.DeletedCount == 0) return NotFound("Form data not found.");
 
-        //    return Ok(new { message = "Form data deleted successfully." });
-        //}
+        // ------------------ DELETE ------------------
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteForm(Guid id)
+        {
+            if(id == null) return BadRequest("ID is null.");
+            var result = await _submmitdata.DeleteById(id);
+            return NoContent();
+        }
     }
 }

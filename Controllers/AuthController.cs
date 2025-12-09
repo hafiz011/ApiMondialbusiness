@@ -78,7 +78,9 @@ namespace WebApp.Controllers
                     {
                         Id = user.Id,
                         Name = user.Name,
-                        Email = user.Email
+                        Roles = roles
+
+
                     }
                 });
             }
@@ -324,8 +326,10 @@ namespace WebApp.Controllers
                 user.Name,
                 user.Email,
                 user.PhoneNumber,
-                user.Address,
-                user.ImagePath
+                user.User,
+                user.Bio,
+                user.Address
+       
             });
         }
 
@@ -340,44 +344,10 @@ namespace WebApp.Controllers
             if (user == null)
                 return NotFound(new { Message = "User not found." });
 
-            user.Name = model.FirstName ?? user.Name;
+            user.Name = model.Name ?? user.Name;
             user.PhoneNumber = model.Phone ?? user.PhoneNumber;
             user.Address = model.Address ?? user.Address;
-
-            if (model.ImagePath != null)
-            {
-                var imagesPath = Path.Combine("wwwroot", "images", "profile");
-                if (!Directory.Exists(imagesPath))
-                {
-                    Directory.CreateDirectory(imagesPath);
-                }
-
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.ImagePath.FileName);
-                var filePath = Path.Combine(imagesPath, fileName);
-
-                try
-                {
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await model.ImagePath.CopyToAsync(stream);
-                    }
-
-                    if (!string.IsNullOrEmpty(user.ImagePath))
-                    {
-                        var oldFilePath = Path.Combine("wwwroot", user.ImagePath.TrimStart('/'));
-                        if (System.IO.File.Exists(oldFilePath))
-                        {
-                            System.IO.File.Delete(oldFilePath);
-                        }
-                    }
-
-                    user.ImagePath = $"/images/profile/{fileName}";
-                }
-                catch (Exception ex)
-                {
-                    return StatusCode(500, new { Message = "An error occurred while uploading the image.", Error = ex.Message });
-                }
-            }
+            user.Bio = model.Bio ?? user.Bio;
 
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
