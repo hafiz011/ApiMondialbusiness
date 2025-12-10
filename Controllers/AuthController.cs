@@ -103,7 +103,7 @@ namespace WebApp.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterModel model)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid || model.User == "Admin" || model.User == "admin")
                 return BadRequest(ModelState);
 
             var existingUser = await _userManager.FindByEmailAsync(model.Email);
@@ -122,27 +122,17 @@ namespace WebApp.Controllers
             if (!result.Succeeded)
                 return BadRequest(new { Message = "User registration failed", Errors = result.Errors });
 
-            const string defaultRole = "User";
-
-            var roleExists = await _roleManager.RoleExistsAsync(defaultRole);
+            var roleExists = await _roleManager.RoleExistsAsync(model.User);
             if (!roleExists)
             {
-                var roleResult = await _roleManager.CreateAsync(new ApplicationRole { Name = defaultRole });
-                if (!roleResult.Succeeded)
-                {
-                    return BadRequest(new { Message = "Failed to create default role", Errors = roleResult.Errors });
-                }
+                return BadRequest(new { Message = "Failed to create default role" });
             }
 
-            await _userManager.AddToRoleAsync(user, defaultRole);
+            await _userManager.AddToRoleAsync(user, model.User);
 
-            /*            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);*/
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
             var encodedToken = WebUtility.UrlEncode(token);
-
-            //var confirmationLink = Url.Action("ConfirmEmail", "Auth",
-            //       new { userId = user.Id, token }, Request.Scheme);
 
             var confirmationLink = $"https://mondialbusiness.eu/confirm-email?userId={Uri.EscapeDataString(user.Id.ToString())}&token={encodedToken}";
 
@@ -173,7 +163,6 @@ namespace WebApp.Controllers
             {
                 return Ok(new { Message = "Your email is already confirmed. You can log in now." });
             }
-            //var decodedToken = WebUtility.UrlDecode(model.Token);
             var result = await _userManager.ConfirmEmailAsync(user, model.Token);
             if (!result.Succeeded)
             {
@@ -223,6 +212,7 @@ namespace WebApp.Controllers
             return Ok(new { Message = "Password reset link sent to your email." });
         }
 
+
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword(ResetPasswordRequestModel model)
         {
@@ -234,11 +224,8 @@ namespace WebApp.Controllers
             if (user == null)
                 return BadRequest(new { Message = "User not found" });
 
-            // Decode token from URL
-            var decodedToken = WebUtility.UrlDecode(model.Token);
-
             // Reset the password using the token
-            var result = await _userManager.ResetPasswordAsync(user, decodedToken, model.NewPassword);
+            var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
 
             if (!result.Succeeded)
                 return BadRequest(new { Message = "Invalid or expired token." });
@@ -246,28 +233,6 @@ namespace WebApp.Controllers
             _logger.LogInformation($"Password successfully reset for {model.Email}");
             return Ok(new { Message = "Password reset successfully." });
         }
-
-
-        //[HttpPost("reset-password")]
-        //public async Task<IActionResult> ResetPassword(ResetPasswordRequestModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return BadRequest(ModelState);
-
-        //    // Find the user by email
-        //    var user = await _userManager.FindByEmailAsync(model.Email);
-        //    if (user == null)
-        //        return BadRequest(new { Message = "User not found" });
-
-        //    // Reset the password using the token
-        //    var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
-
-        //    if (!result.Succeeded)
-        //        return BadRequest(new { Message = "Invalid or expired token." });
-
-        //    _logger.LogInformation($"Password successfully reset for {model.Email}");
-        //    return Ok(new { Message = "Password reset successfully." });
-        //}
 
         public class ChangePasswordModel
         {
