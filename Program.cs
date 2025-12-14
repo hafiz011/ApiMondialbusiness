@@ -1,22 +1,38 @@
-using WebApp.DbContext;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using MongoDB.Driver;
+using System.Text;
+using WebApp.DbContext;
+using WebApp.Models.DatabaseModels;
+using WebApp.Services;
 using WebApp.Services.Interface;
 using WebApp.Services.Repository;
-using WebApp.Services;
-using Microsoft.AspNetCore.HttpOverrides;
-using WebApp.Models.DatabaseModels;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
+
+// MongoClient → Singleton (recommended by MongoDB)
+builder.Services.AddSingleton<IMongoClient>(sp =>
+{
+    var settings = sp.GetRequiredService<IOptions<MongoDbSettings>>().Value;
+    return new MongoClient(settings.ConnectionString);
+});
+// IMongoDatabase → Singleton
+builder.Services.AddSingleton<IMongoDatabase>(sp =>
+{
+    var settings = sp.GetRequiredService<IOptions<MongoDbSettings>>().Value;
+    var client = sp.GetRequiredService<IMongoClient>();
+    return client.GetDatabase(settings.DatabaseName);
+});
 builder.Services.AddSingleton<MongoDbContext>();
+
 
 builder.Services.AddCors(options =>
 {
@@ -67,11 +83,18 @@ builder.Services.AddAuthentication(options =>
 });
 
 
+// Repositories
+builder.Services.AddScoped<BusinessIdeasRepository>();
+builder.Services.AddScoped<InvestmentsRepository>();
+builder.Services.AddScoped<TransactionsRepository>();
+
+// Services
+builder.Services.AddScoped<IBusinessIdeasService, BusinessIdeasService>();
+builder.Services.AddScoped<IInvestmentsService, InvestmentsService>();
+builder.Services.AddScoped<ITransactionsService, TransactionsService>();
+
+builder.Services.AddScoped<ISubmmitdata, SubmmitdataRepository>();
 builder.Services.AddScoped<EmailService>();
-builder.Services.AddSingleton<ISubmmitdata, SubmmitdataRepository>();
-
-
-
 
 
 builder.Services.AddControllers();
@@ -98,7 +121,6 @@ app.UseAuthorization();
 app.UseStaticFiles();
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
 
 app.MapControllers();
 

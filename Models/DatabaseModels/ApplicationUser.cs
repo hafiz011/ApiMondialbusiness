@@ -26,7 +26,21 @@ namespace WebApp.Models.DatabaseModels
 
         [BsonElement("RefreshTokenExpiryTime")]
         public DateTime RefreshTokenExpiryTime { get; set; }
+
+        [BsonElement("Bio")]
         public string Bio { get; set; }
+
+        [BsonElement("KycStatus")]
+        public string KycStatus { get; set; } // Pending, Approved, Rejected
+
+        [BsonElement("WalletBalance")]
+        public double WalletBalance { get; set; }
+
+        [BsonElement("LastLogin")]
+        public DateTime LastLogin { get; set; }
+
+        [BsonElement("CreatedAt")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 
     public class Address

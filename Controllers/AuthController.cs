@@ -71,6 +71,7 @@ namespace WebApp.Controllers
                 var token = JwtTokenHelper.GenerateToken(user.Id.ToString(), role, _configuration["JwtSettings:Key"], _configuration["JwtSettings:Issuer"], _configuration["JwtSettings:Audience"]);
                 _logger.LogInformation($"User {user.Email} successfully logged in.");
 
+                await _signInManager.SignInAsync(user, user.LastLogin == DateTime.UtcNow);
                 return Ok(new
                 {
                     Token = token,
@@ -115,7 +116,8 @@ namespace WebApp.Controllers
                 UserName = model.Email,
                 Email = model.Email,
                 Name = model.Name,
-                User = model.User
+                User = model.User,
+                CreatedAt = DateTime.UtcNow
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);

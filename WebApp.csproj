@@ -17,7 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\Interface\" />
     <Folder Include="wwwroot\images\blogs\" />
     <Folder Include="wwwroot\images\profile\" />
     <Folder Include="wwwroot\images\Testimonial\" />
