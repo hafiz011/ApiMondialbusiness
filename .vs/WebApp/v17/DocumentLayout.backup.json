@@ -74,8 +74,7 @@
               "RelativeToolTip": "Models\\DatabaseModels\\Investments.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-22T07:18:54.1Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-22T07:18:54.1Z"
             },
             {
               "$type": "Document",
@@ -87,8 +86,7 @@
               "RelativeToolTip": "Services\\Repository\\BusinessIdeasRepository.cs",
               "ViewState": "AgIAACQAAAAAAAAAAAAuwDgAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-22T06:39:19.319Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-22T06:39:19.319Z"
             },
             {
               "$type": "Document",
@@ -100,8 +98,7 @@
               "RelativeToolTip": "Services\\BusinessIdeasService.cs",
               "ViewState": "AgIAACYAAAAAAAAAAAAYwDMAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-22T04:46:33.073Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-22T04:46:33.073Z"
             },
             {
               "$type": "Document",
@@ -123,7 +120,7 @@
               "RelativeDocumentMoniker": "Controllers\\CreatorsController.cs",
               "ToolTip": "D:\\GitHub\\Client_Project\\mondial_eco_API\\Controllers\\CreatorsController.cs",
               "RelativeToolTip": "Controllers\\CreatorsController.cs",
-              "ViewState": "AgIAALYAAAAAAAAAAAAuwOwAAABMAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAOwAAABMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-18T05:38:46.072Z",
               "EditorCaption": ""
@@ -138,8 +135,7 @@
               "RelativeToolTip": "Services\\Repository\\MongoRepository.cs",
               "ViewState": "AgIAABoAAAAAAAAAAAAwwC0AAAAlAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-22T06:41:51.629Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-22T06:41:51.629Z"
             },
             {
               "$type": "Document",
@@ -151,8 +147,7 @@
               "RelativeToolTip": "Models\\DatabaseModels\\BusinessIdeas.cs",
               "ViewState": "AgIAABIAAAAAAAAAAAA3wBoAAAAhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-22T06:48:38.891Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-22T06:48:38.891Z"
             },
             {
               "$type": "Document",
